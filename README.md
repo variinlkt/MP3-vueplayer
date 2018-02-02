@@ -1,27 +1,38 @@
-# frontend
+# Vue-audioplayer
 
-> A Vue.js project
+> An MP3 player,using vue-cli(vuex)/node(express)/mongodb(mongoose)
+
+## Features
+* Uploading your own audio files/lyric files/pics for covers is allowed
+* Deleting your songs is also allowed
+* Control the progress bar to set playing position
+
+## Features in the future
+* a volumn control bar
+* switch previous/next songs
+* loop playing
+* optimize the codes
 
 ## Build Setup
 
-``` bash
+### for frontend
+``` 
+# git bash in /frontend
 # install dependencies
 npm install
 
-# serve with hot reload at localhost:8080
+# serve with hot reload at localhost:8089
 npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run all tests
-npm test
 ```
+### for backend
+``` 
+# git bash in /frontend/server
+# install dependencies
+npm install
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+# start server
+nodemon
+```
+### for sql
+http://www.runoob.com/nodejs/nodejs-mongodb.html
+
