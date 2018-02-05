@@ -113,7 +113,7 @@ router.post('/uploadFiles', iUpload, function (req, res, next) {
 
     let fileName=req.file.originalname.split('.')[0],
         updateData;
-    // console.log(req.file.mimetype);
+    console.log(req.file.mimetype);
     if(req.file.mimetype==='image/jpeg'){
     	updateData={cov:req.file.path}
     }else if(req.file.mimetype==='audio/mp3'){
@@ -169,6 +169,15 @@ router.post('/getLrc',(req,res)=>{
 	let str=iconv.decode(buf,'GBK')
     return res.send(str);
 })
-
+//------------ctrls----------------
+router.post('/next',(req,res)=>{
+	let song=req.body.song
+	Songs.find({'song':song}).sort({_id: 1}).limit(1).find((err,docs)=>{
+		if(err) console.error(err)
+		if(docs.length){
+			console.log(docs)
+		}
+	})
+})
 
 module.exports = router;

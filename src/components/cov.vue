@@ -5,11 +5,9 @@
     <div class="disk">
       <div class="circle">
         <div class="circle-inside" :style="{backgroundImage: 'url('+cov+')',animationPlayState:ps?'running':'paused'}">
-          
         </div>
       </div>
     </div>
-    
   </el-main>
 </template>
 
@@ -18,34 +16,19 @@ import playCtrls from '../App'
 export default {
   data () {
     return {
+      enlarge:false
     }
   },
   methods:{
-  	setStorage(){
-      if(!localStorage.getItem('song')){//播放第一首
-        localStorage.setItem('song',this.$store.state.playSong)
-        localStorage.setItem('singer',this.$store.state.playSinger)
-        localStorage.setItem('cov',this.$store.state.playCov)
-        localStorage.setItem('url',this.$store.state.playUrl)
-        localStorage.setItem('lrc',this.$store.state.playLrc)
-
-      }else{
-        if(localStorage.getItem('url')!==this.$store.state.playUrl
-          &&this.$store.state.playUrl){//播放下一首
-          localStorage.setItem('song',this.$store.state.playSong)
-          localStorage.setItem('singer',this.$store.state.playSinger)
-          localStorage.setItem('cov',this.$store.state.playCov)
-          localStorage.setItem('url',this.$store.state.playUrl)
-          localStorage.setItem('lrc',this.$store.state.playLrc)
-        }
-      }
-      console.log(localStorage.getItem('lrc'))
-    }
   },
   mounted(){
-    this.setStorage();
-  	playCtrls.methods.playMusic(this.url,this.ps,this.ct,this.iconChange)
+    if(this.showCov){
+      this.setStorage(this.song,this.singer,this.cov,this.url,this.lrc)
+      playCtrls.methods.playMusic(this.url,this.ps,this.ct,this.iconChange)
+    }
+    
   },
+
   computed:{
     ct(){
       return this.$store.state.current
@@ -65,6 +48,9 @@ export default {
     url(){
       return this.$store.state.playUrl||localStorage.getItem('url')
     },
+    lrc(){
+      return this.$store.state.playLrc||localStorage.getItem('lrc')
+    },
     iconChange:{
       get: function () {
         return this.$store.state.iconChange
@@ -73,7 +59,16 @@ export default {
         this.$store.state.iconChange=newVal
       }
     },
-  }
+    showCov:{
+      get: function () {
+        return this.$store.state.showCov
+      },
+      set: function (newVal) {
+        this.$store.state.showCov=newVal
+      }
+    },
+    
+  },
 }
 </script>
 
@@ -105,6 +100,12 @@ export default {
   transform: translate(-50%,-50%);
   transform-origin: 50%,50%;
   animation: spin 10s linear infinite;
+  transition: transform .5s;
+  transform: scale(1,1);
+}
+.circle-inside:active{
+  transform: scale(2,2);
+  animation: none;
 }
 
 @keyframes spin{

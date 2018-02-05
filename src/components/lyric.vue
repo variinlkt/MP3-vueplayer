@@ -2,7 +2,7 @@
   <el-main>
     <div class="lrcPage" :style="{marginTop:marginT+'px'}">
       <ul>
-        <li v-for='(i,index) in lrc' :class="{'highlight':index===idx-1}" :key="i.id">
+        <li v-for='(i,index) in lrcData' :class="{'highlight':index===idx-1}" :key="i.id">
           {{i}}
         </li>
       </ul>
@@ -14,51 +14,56 @@
 <script>
 import playCtrls from '../App'
 import axios from 'axios'
-import store from '../store'
 export default {
   data () {
     return {
-      lrc:[],
     }
   },
   methods:{
-  	postData(url){
-  	  let that=this
+    calMarginT(){
+      this.marginT=parseInt(window.innerHeight)/2-100
+    },
+    postData(url){
+      let lrc=[],tarr=[]
+      let that=this
       axios.post('api/getLrc',{
         lrc:url
       })
       .then(function(response){
         if(response.data){
-          
           let lyric=response.data
           let larr=lyric.split('\n')
-          for(let val of larr){
+          larr.forEach((val,i)=>{
             let t=val.split(']')[0]
             let time=t.split('[')[1]
             let l=val.split(']')[1]
-            that.lrc.push(l)
-            
-            that.tarr.push(parseInt(time.split(':')[0])*60+parseFloat(val.split(':')[1]))
-          }
-        }
-      })
-  	},
-    handleTime(tarr=this.tarr){
-      if(this.ct>=tarr[this.idx]){
 
-        this.marginT-=30
-        // this.hl='highlight'
-        this.idx++
-      }
-    },
-    calMarginT(){
-      this.marginT=parseInt(window.innerHeight)/2-100
+            lrc.push(l)
+            
+            tarr.push(parseInt(time.split(':')[0])*60+parseFloat(val.split(':')[1]))
+
+            that.lrcData=lrc
+            that.tarr=tarr
+          })
+        }
+        that.sliderChange(that.ct,that.tarr,that.marginT,that.idx,that)
+      })
+        
+      
     }
   },
   mounted(){
   	// console.log(localStorage.getItem('lrc'))
-  	this.postData(localStorage.getItem('lrc'))
-	  this.calMarginT()
+    let that=this
+    if(this.showCov){
+
+      this.calMarginT(this)
+      this.showCov=!this.showCov
+      this.postData(localStorage.getItem('lrc'))
+
+    }
+    else
+  	  this.sliderChange(this.ct,this.tarr,this.marginT,this.idx,this)
   },
   computed:{
     ct(){
@@ -88,11 +93,30 @@ export default {
         this.$store.state.idx=newVal
       }
     },
+    playLrc(){
+      return this.$store.state.playLrc
+    },
+    lrcData:{
+      get: function () {
+        return this.$store.state.lrc
+      },
+      set: function (newVal) {
+        this.$store.state.lrc=newVal
+      }
+    },
+    showCov:{
+      get: function () {
+        return this.$store.state.showCov
+      },
+      set: function (newVal) {
+        this.$store.state.showCov=newVal
+      }
+    },
   },
   watch:{
-    ct:function(){
-      this.handleTime(this.tarr)
-    }
+    ct(){
+      this.handleTime(this.tarr,this)
+    },
   }
 
 }

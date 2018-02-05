@@ -22,14 +22,13 @@ export default {
   },
   methods:{
     filesUpload(file){
-console.log(file);
       let isFileName=file.name.split('.')[0]===sessionStorage.getItem('songUpload')
-      let isFileType=file.name.split('.')[1]==='mp3'||file.name.split('.')[1]==='jpg'||file.name.split('.')[1]==='lrc'||file.name.split('.')[1]==='txt'
+      let isFileType=file.name.split('.')[1]==='mp3'||file.name.split('.')[1]==='ogg'||file.name.split('.')[1]==='wav'||file.name.split('.')[1]==='jpg'||file.name.split('.')[1]==='png'||file.name.split('.')[1]==='lrc'||file.name.split('.')[1]==='txt'
       if(!isFileName){
         this.$message.error('上传文件名称与表单提交的名称不同！请修改文件名称');
       } 
       if(!isFileType){
-        this.$message.error('上传文件类型只能是mp3、jpg、lrc');
+        this.$message.error('上传文件类型只能是mp3/ogg/wav、jpg/png、lrc/txt');
       } 
 
       return isFileName&&isFileType

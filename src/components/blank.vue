@@ -3,7 +3,7 @@
 </template>
 <script>
 	export default{
-		data(){
+		mounted(){
 			this.$router.replace('songs')
 		}
 	}

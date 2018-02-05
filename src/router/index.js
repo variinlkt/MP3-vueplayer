@@ -10,7 +10,7 @@ import addUpload from '@/components/add-upload'
 import lyric from '@/components/lyric'
 import blank from '@/components/blank'
 import cov from '@/components/cov'
-
+import blankLrc from '@/components/blankLrc'
 
 Vue.use(Router)
 
@@ -85,6 +85,11 @@ export default new Router({
       path:'/lrc',
       name:'lrc',
       component:lyric
+    },
+    {
+      path:'/blankLrc',
+      name:'blankLrc',
+      component:blankLrc,
     }
   ]
 })
