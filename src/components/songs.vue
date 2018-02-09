@@ -1,17 +1,15 @@
 <template>
 	<el-main>
 		<table>
-			<tr v-for="(value,index) in tableData" @click="init();update({song:tableData[index].song,url:tableData[index].url,lrc:tableData[index].lrc,singer:tableData[index].singer,cov:tableData[index].cov,idx:tableData[index].idx});routerTo('cov')">
+			<tr v-for="(value,index) in tableData" @click="init();update({song:tableData[index].song,url:tableData[index].url,lrc:tableData[index].lrc,singer:tableData[index].singer,cov:tableData[index].cov,idx:tableData[index].idx});play();setStorage(song,singer,cov,url,lrc);routerTo('cov')">
 				<td>{{index+1}}</td>
 				<td><img :src="tableData[index].cov" alt=""></td>
 				<td v-for="td in value" v-html="td">
 				</td>
 				<td >
-					<!-- <transition-group name="fade"> -->
 					<i class="el-icon-delete" @click.stop="tableData[index].confirm=!tableData[index].confirm" v-show="!tableData[index].confirm"></i>
 					<el-button type="danger" @click.stop="deleteSong(tableData[index].song,tableData[index].cov,tableData[index].url,tableData[index].lrc)" v-show="tableData[index].confirm">删除</el-button>
 					<el-button @click.stop="tableData[index].confirm=!tableData[index].confirm" v-show="tableData[index].confirm">取消</el-button>
-				<!-- </transition-group> -->
 				</td>
 			</tr>
 		</table>
@@ -20,6 +18,7 @@
 <script>
 import axios from 'axios'
 import {mapMutations} from 'vuex'
+import playCtrls from '../App'
 export default {
   data () {
     return {
@@ -32,9 +31,6 @@ export default {
   	routerTo(url){
   		this.$router.push({name:url})
   	},
-  	// playSong(s,u,l,sr,c){
-  	// 	this.$router.push({name:`cov`,params:{name:s,url:u,lrc:l,singer:sr,cov:c}})
-  	// },
   	loadFromDatabase(){
   		let that=this
   		axios.get('/api/showList')
@@ -73,17 +69,27 @@ export default {
   		})
 		.then(function(response){
 			if(response.data){
-				console.log('okok')
 				that.$router.push('blank')
 			}
 				
 		})
+  	},
+  	play(){
+  		playCtrls.methods.playMusic(this.url,this)
   	}
   },
   mounted(){//页面加载完成
   	return this.loadFromDatabase()
   },
   computed:{
+  	ps:{
+      get: function () {
+        return this.$store.state.playState
+      },
+      set: function (newVal) {
+        this.$store.state.playState=newVal
+      }
+    },
   	tableData:{
       get: function () {
         return this.$store.state.tableData
@@ -99,6 +105,43 @@ export default {
       set: function (newVal) {
         this.$store.state.tableLength=newVal
       }
+    },
+    d:{
+      get: function () {
+        return this.$store.state.duration
+      },
+      set: function (newVal) {
+        this.$store.state.duration=newVal
+      }
+    },
+    ct(){
+      return this.$store.state.current
+    },
+    url(){
+      return this.$store.state.playUrl||localStorage.getItem('url')
+    },
+    iconChange:{
+      get: function () {
+        return this.$store.state.iconChange
+      },
+      set: function (newVal) {
+        this.$store.state.iconChange=newVal
+      }
+    },
+    singer(){
+      return this.$store.state.playSinger||localStorage.getItem('singer')
+    },
+    song(){
+      return this.$store.state.playSong||localStorage.getItem('song')
+    },
+    cov(){
+      return this.$store.state.playCov||localStorage.getItem('cov')
+    },
+    url(){
+      return this.$store.state.playUrl||localStorage.getItem('url')
+    },
+    lrc(){
+      return this.$store.state.playLrc||localStorage.getItem('lrc')
     },
   }
   
@@ -174,6 +217,6 @@ export default {
 		margin: 10px 0;
 	}
 	.el-icon-delete{
-		font-size: 25px;
+		font-size: 1.5rem;
 	}
 </style>

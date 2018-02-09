@@ -25,37 +25,17 @@ new Vue({
 })
 Vue.prototype.sliderChange=(newct,tarr,marginT,idx,that)=>{
   let minv=10000,mini
+  console.log('margint:'+marginT,idx,newct)
   tarr.forEach((val,i)=>{
     if(Math.abs(val-newct)<minv){
       minv=Math.abs(val-newct)
       mini=i
+      console.log(minv,mini)
     }
   })
+  console.log(minv,mini)
   that.marginT+=(idx-mini)*30
   that.idx=mini
-
-}
-Vue.prototype.setStorage=(song,singer,cov,url,lrc)=>{
-  console.log('sets')
-  if(!localStorage.getItem('song')){//播放第一首
-    localStorage.setItem('song',song)
-    localStorage.setItem('singer',singer)
-    localStorage.setItem('cov',cov)
-    localStorage.setItem('url',url)
-    localStorage.setItem('lrc',lrc)
-  }else{
-    if(localStorage.getItem('url')!==url){//播放下一首
-      if(url){
-        console.log('another')
-        localStorage.setItem('song',song)
-        localStorage.setItem('singer',singer)
-        localStorage.setItem('cov',cov)
-        localStorage.setItem('url',url)
-        localStorage.setItem('lrc',lrc)
-      }
-      
-    }
-  }
 }
 Vue.prototype.postData=(url,that)=>{
 	let lrc=[],tarr=[]
@@ -80,8 +60,29 @@ Vue.prototype.postData=(url,that)=>{
       })
     }
   })
+}//公共方法报错：组件里没comuputed方法内的store的state
+Vue.prototype.setStorage=(song,singer,cov,url,lrc)=>{
+  if(!localStorage.getItem('song')){//播放第一首
+    localStorage.setItem('song',song)
+    localStorage.setItem('singer',singer)
+    localStorage.setItem('cov',cov)
+    localStorage.setItem('url',url)
+    localStorage.setItem('lrc',lrc)
+  }else{
+    if(localStorage.getItem('url')!==url){//播放下一首
+      if(url){
+        localStorage.setItem('song',song)
+        localStorage.setItem('singer',singer)
+        localStorage.setItem('cov',cov)
+        localStorage.setItem('url',url)
+        localStorage.setItem('lrc',lrc)
+      }
+      
+    }
+  }
 }
 Vue.prototype.calMarginT=(that)=>{
+	console.log(window.innerHeight)
   that.marginT=parseInt(window.innerHeight)/2-100
 }
 Vue.prototype.handleTime=(tarr,that)=>{////////////gonggongff

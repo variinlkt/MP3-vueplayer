@@ -1,17 +1,21 @@
 # Vue-audioplayer
 
-> An MP3 player,using vue-cli(vuex)/node(express)/mongodb(mongoose)
+> An MP3 player,using vue.js(vue-cli)/node.js(express)/mongodb(mongoose)
 
-## Features
-* Uploading your own audio files/lyric files/pics for covers is allowed
-* Deleting your songs is also allowed
+## You can...
+* Uploading your own audio files/lyric files/pics for covers 
+* Deleting your songs
 * Control the progress bar to set playing position
+* Press the cover to enlarge it
+* Control the volume
+* Choose playing mode:order/repeat
+* Switch previous/next songs
+* Look at the lryic which can roll when playing music
 
-## Features in the future
-* a volumn control bar
-* switch previous/next songs
-* loop playing
-* optimize the codes
+## In the future...
+* Lryic rolling transition will be added
+* Responsive layout will be finished
+* The codes will be optimized
 
 ## Build Setup
 

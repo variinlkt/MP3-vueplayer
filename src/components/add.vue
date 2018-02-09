@@ -56,7 +56,6 @@ export default {
             singer:this.info.singer,
           })
           .then(function (response) {
-            // console.log(response.data);
             if(response.data){
               sessionStorage.setItem('songUpload',that.info.song)
               localStorage.setItem('unfinished',true)//如果在提交表单后未上传文件前退出
@@ -65,12 +64,10 @@ export default {
             }else{
               return that.$message.error(`歌单中已有相同名字文件或数据库错误！请尝试修改文件名`)
             }
-            // that.$refs.upload.submit();
           })
           .catch(function (error) {
             console.error(error);
           });
-          // this.$refs.upload.submit();
         } else {
           console.error('error submit!!');
           return false;
@@ -87,9 +84,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 @import url('../assets/css/index.css');
-/*.el-main{
-  overflow-y: auto;
-}*/
 .el-upload,.upload-demo{
   margin: 20px 0;
 }

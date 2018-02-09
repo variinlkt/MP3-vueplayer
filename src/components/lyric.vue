@@ -20,54 +20,21 @@ export default {
     }
   },
   methods:{
-    calMarginT(){
-      this.marginT=parseInt(window.innerHeight)/2-100
-    },
-    postData(url){
-      let lrc=[],tarr=[]
-      let that=this
-      axios.post('api/getLrc',{
-        lrc:url
-      })
-      .then(function(response){
-        if(response.data){
-          let lyric=response.data
-          let larr=lyric.split('\n')
-          larr.forEach((val,i)=>{
-            let t=val.split(']')[0]
-            let time=t.split('[')[1]
-            let l=val.split(']')[1]
-
-            lrc.push(l)
-            
-            tarr.push(parseInt(time.split(':')[0])*60+parseFloat(val.split(':')[1]))
-
-            that.lrcData=lrc
-            that.tarr=tarr
-          })
-        }
-        that.sliderChange(that.ct,that.tarr,that.marginT,that.idx,that)
-      })
-        
-      
-    }
+    
   },
   mounted(){
-  	// console.log(localStorage.getItem('lrc'))
-    let that=this
-    if(this.showCov){
-
-      this.calMarginT(this)
-      this.showCov=!this.showCov
-      this.postData(localStorage.getItem('lrc'))
-
-    }
-    else
-  	  this.sliderChange(this.ct,this.tarr,this.marginT,this.idx,this)
+      if(!this.covFlag){
+        this.calMarginT(this)
+        this.postData(localStorage.getItem('lrc'),this)
+      }
+      
   },
   computed:{
     ct(){
       return this.$store.state.current
+    },
+    covFlag(){
+      return this.$store.state.covFlag
     },
     marginT:{
       get: function () {
@@ -104,12 +71,12 @@ export default {
         this.$store.state.lrc=newVal
       }
     },
-    showCov:{
+    freshen:{
       get: function () {
-        return this.$store.state.showCov
+        return this.$store.state.freshen
       },
       set: function (newVal) {
-        this.$store.state.showCov=newVal
+        this.$store.state.freshen=newVal
       }
     },
   },
@@ -117,16 +84,19 @@ export default {
     ct(){
       this.handleTime(this.tarr,this)
     },
+    freshen(){
+      if(this.freshen){
+        // this.freshen=!this.freshen
+        // this.$router.push('blankLrc')
+        console.log(this.freshen)
+      }
+    }
   }
 
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/*.lrcPage{
-  overflow-y: hidden;
-}*/
 .el-main{
   padding: 0;
 }

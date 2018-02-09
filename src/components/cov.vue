@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import playCtrls from '../App'
+import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -22,14 +23,20 @@ export default {
   methods:{
   },
   mounted(){
-    if(this.showCov){
-      this.setStorage(this.song,this.singer,this.cov,this.url,this.lrc)
-      playCtrls.methods.playMusic(this.url,this.ps,this.ct,this.iconChange)
-    }
-    
+      this.postData(this.lrc,this)
+      this.calMarginT(this)
+      this.covFlag=true
   },
 
   computed:{
+    covFlag:{
+      get: function () {
+        return this.$store.state.covFlag
+      },
+      set: function (newVal) {
+        this.$store.state.covFlag=newVal
+      }
+    },
     ct(){
       return this.$store.state.current
     },
@@ -59,20 +66,34 @@ export default {
         this.$store.state.iconChange=newVal
       }
     },
-    showCov:{
+    lrcData:{
       get: function () {
-        return this.$store.state.showCov
+        return this.$store.state.lrc
       },
       set: function (newVal) {
-        this.$store.state.showCov=newVal
+        this.$store.state.lrc=newVal
       }
     },
-    
+    tarr:{
+      get: function () {
+        return this.$store.state.tarr
+      },
+      set: function (newVal) {
+        this.$store.state.tarr=newVal
+      }
+    },
+    marginT:{
+      get: function () {
+        return this.$store.state.marginT
+      },
+      set: function (newVal) {
+        this.$store.state.marginT=newVal
+      }
+    },
   },
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .disk{
   display: flex;
@@ -80,7 +101,6 @@ export default {
   padding-top: 50px;
 }
 .circle{
-  /*border:  40px solid ;*/
   border: 1px solid transparent;
   background: linear-gradient(45deg,#1B1B1B 35%,#777676 50%,#1B1B1B 65%);
   width: 200px;

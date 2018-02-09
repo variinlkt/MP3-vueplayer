@@ -25,29 +25,31 @@
         <el-slider v-model="ct" :max="d" :format-tooltip="toAudiFormat" :step="0.1" @change="sliderChange1(ct)"></el-slider>{{ct|toAudiFormat}}/{{d|toAudiFormat}}
       </div>
       <el-row>
-        <el-col :span="8" class="loopCtrl">
-          <el-switch v-model="isLoop" active-text="循环播放" inactive-text="顺序播放">
+        <el-col :span="6" :xs="0" class="loopCtrl">
+          <el-switch v-model="isLoop" active-text="循环" inactive-text="顺序">
           </el-switch>
         </el-col> 
-        <el-col :span="8">
+        <el-col :span="12" :xs="24">
           <el-button-group>
             <router-link to="add">
               <el-button icon="el-icon-circle-plus"></el-button>
             </router-link>
             <el-button type="primary" @click="init();changeSong('pre')" icon="el-icon-d-arrow-left"></el-button>
-            <el-button type="primary" :icon="iconChange" @click="changeState();playMusic();"></el-button>
+            <el-button type="primary" :icon="iconChange" @click="playMusic();"></el-button>
             <el-button type="primary" @click="init();changeSong('next')" icon="el-icon-d-arrow-right"></el-button>
             <el-button icon="el-icon-tickets" @click="showLrcPage"></el-button>
           </el-button-group>
         </el-col> 
-        <el-col :span="8" class="volCtrl" >
+        <el-col :span="6" class="volCtrl" :xs="12">
           <div class="volIcon">
             <i class="el-icon-service"></i>
           </div>
-          
           <el-slider v-model="volume" class="volBar" @change="setVol"></el-slider>
         </el-col> 
-
+        <el-col :sm="0" :md="0" :lg="0" :xl="0" :xs="12">
+          <el-switch v-model="isLoop" active-text="循环" inactive-text="顺序">
+          </el-switch>
+        </el-col> 
       </el-row>
       
     </el-footer>
@@ -66,7 +68,7 @@ export default {
     return{
       val:0,
       // songSrc:''
-      lrcName:this.$store.state.playLrc,//////////////////////
+      lrcName:this.$store.state.playLrc,
       checkd:0,
       isLoop:false,
       volume:100,
@@ -75,39 +77,50 @@ export default {
   },
   methods:{
     ...mapMutations([
-      'changeState','currentT','updateDur','init'
+      'init'
     ]),
     // ...mapMutations({
     //   change: 'changeState' // 将 `this.change()` 映射为 `this.$store.commit('changeState')`
     // }),
-    playMusic(url=localStorage.getItem('url'),ps=this.ps,ct=this.ct,icon=this.iconChange,callback=this.update){
+    playMusic(url=localStorage.getItem('url'),that=this){
       let audi=document.getElementById('audi')
       audi.setAttribute("crossOrigin","anonymous")
-      // console.log(audi.duration)
-      // this.updateDur()
+      audi.setAttribute("src","")
       audi.setAttribute("src",url) 
       audi.load()
       audi.ondurationchange=()=>{//ondurationchange在事件循环最后执行
-        store.commit("updateDur",audi.duration)
+        that.d=audi.duration
       }
-      if(ps) {  
-        icon='el-icon-error'////////////
-        audi.play();  
-      } else {  
 
-        icon='el-icon-caret-right'
-        audi.pause();  
+      if(!that.ps) {  //play
+        that.iconChange='el-icon-error'
+        audi.play()
+      } else {  //pause
+        that.iconChange='el-icon-caret-right'
+        audi.pause()
       } 
-      if(ct!==audi.currentTime){
-        audi.currentTime=ct
+      if(that.ct!==audi.currentTime){//暂停时更改播放位置，否则相对于停止
+        audi.currentTime=that.ct
       }
+      that.ps=!that.ps
     },
     sliderChange1(value){
       let audi = document.getElementById('audi')
-      if(value!==audi.currentTime){
+      if(value!==audi.currentTime){//更改进度
         audi.currentTime=value
       }
-      this.sliderChange(this.ct,this.tarr,this.marginT,this.idx,this)
+      this.sliderChange(this.ct,this.tarr,this.marginT,this.idx)
+    },
+    sliderChange(newct,tarr,marginT,idx){
+      let minv=10000,mini
+      tarr.forEach((val,i)=>{
+        if(Math.abs(val-newct)<minv){
+          minv=Math.abs(val-newct)
+          mini=i
+        }
+      })
+      this.marginT+=(idx-mini)*30
+      this.idx=mini
     },
     setVol(){
       let audi = document.getElementById('audi')
@@ -122,11 +135,12 @@ export default {
         if(i===this.tableLength)
           i=0
       }
-      else{
+      else if(s==='pre'){
         i--
         if(i<0)
           i=this.tableLength-1
       }
+      else i=s
       store.commit('update',{
         song:this.tableData[i].song,
         singer:this.tableData[i].singer,
@@ -135,10 +149,12 @@ export default {
         url:this.tableData[i].url,
         idx:this.tableData[i].idx
       })
+
       this.setStorage(this.song,this.singer,this.cov,this.url,this.lrc)
       this.playMusic(this.url)
       this.calMarginT(this)
       this.postData(localStorage.getItem('lrc'),this)
+
     },
     showLrcPage(){
       if(this.showLrc==true){
@@ -147,7 +163,6 @@ export default {
       }else{
         this.showLrc=!this.showLrc
         this.$router.go(-1)
-        store.commit('addCT')
       }
     },
     toAudiFormat(val){
@@ -182,8 +197,13 @@ export default {
     },
   },
   computed:{
-    ps(){
+    ps:{
+      get: function () {
         return this.$store.state.playState
+      },
+      set: function (newVal) {
+        this.$store.state.playState=newVal
+      }
     },
     ct:{
       get: function () {
@@ -193,8 +213,13 @@ export default {
         this.$store.state.current=newVal
       }
     },
-    d(){
-      return this.$store.state.duration
+    d:{
+      get: function () {
+        return this.$store.state.duration
+      },
+      set: function (newVal) {
+        this.$store.state.duration=newVal
+      }
     },
     playing(){
       return this.$store.state.playSong
@@ -265,12 +290,28 @@ export default {
     lrc(){
       return this.$store.state.playLrc||localStorage.getItem('lrc')
     },
+    freshen:{
+      get: function () {
+        return this.$store.state.freshen
+      },
+      set: function (newVal) {
+        this.$store.state.freshen=newVal
+      }
+    },
     lrcData:{
       get: function () {
         return this.$store.state.lrc
       },
       set: function (newVal) {
         this.$store.state.lrc=newVal
+      }
+    },
+    currentT:{
+      get: function () {
+        return this.$store.state.current
+      },
+      set: function (newVal) {
+        this.$store.state.current=newVal
       }
     },
   },
@@ -281,8 +322,10 @@ export default {
         if(!this.isLoop){
           store.commit('init')
           this.changeSong('next')
+          this.freshen=!this.freshen
         }
       }
+      this.handleTime(this.tarr,this)
     },
     isLoop(){
       let audi = document.getElementById('audi')
@@ -292,7 +335,7 @@ export default {
   mounted(){
     let audi = document.getElementById('audi');
     audi.ontimeupdate=()=>{
-      store.commit("currentT",{t:audi.currentTime})
+      this.currentT=audi.currentTime
     };
   },
   filters:{
@@ -359,8 +402,12 @@ export default {
   width: 100%;
   border-top: 1px solid #D4D1D1;
   height: 150px !important;
-  padding-top: 40px;
+  padding:10px 5px;
   background: #fff;
+}
+.el-row{
+  width: 100%;
+  margin-top: 10px;
 }
 .block-slider{
   width: 100%;
@@ -375,6 +422,10 @@ export default {
 .el-button-group{
   margin-top: 5px;
 }
+.el-button{
+  font-size: .7rem;
+  padding: .8rem;
+}
 .center{
   color:#1D8CF9;
   font-size: 1.2rem;
@@ -387,6 +438,12 @@ export default {
 .loopCtrl{
   padding: 10px 0;
 }
+.el-switch__label>span{
+  font-size: .7rem !important;
+}
+.el-switch__core{
+  width: 25px !important;
+}
 .volCtrl{
   display: flex;
   justify-content: center;
@@ -397,11 +454,11 @@ export default {
   padding: 10px 0;
 }
 .volBar{
-  width: 80%;
+  width: 70%;
 }
 
 .el-icon-service{
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   margin-top: -5px; 
 
 }
