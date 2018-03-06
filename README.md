@@ -25,6 +25,7 @@
 * Responsive layout
 
 ## Snapshots
+<img src="http://olyyf0kf1.bkt.clouddn.com/GIF.gif" width="400px">
 * **songs page:**
 * <img src="https://github.com/variinlkt/MP3-vueplayer/blob/master/snapshots/songs.PNG?raw=true" width="400px">
 * **cov page:**
